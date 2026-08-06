@@ -3,241 +3,219 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Channel+ Premium • Démo 24h</title>
-
+  <title>Channel+ Premium • Démo 1h30</title>
   <style>
-    *{
-      margin:0;
-      padding:0;
-      box-sizing:border-box;
-      font-family:Arial,Helvetica,sans-serif;
-    }
-
     body{
       min-height:100vh;
       display:flex;
       justify-content:center;
       align-items:center;
-      padding:20px;
       background:#050816;
       color:white;
-    }
-
-    .box{
-      width:100%;
-      max-width:520px;
-      background:rgba(15,23,42,.88);
-      border:1px solid rgba(255,255,255,.08);
-      border-radius:28px;
-      padding:40px 30px;
-      text-align:center;
-      box-shadow:0 20px 50px rgba(0,0,0,.55);
-    }
-
-    h1{
-      color:#22d3ee;
-      margin-bottom:10px;
-    }
-
-    p{
-      color:#cbd5e1;
-      line-height:1.6;
-      margin-bottom:20px;
-    }
-
-    .timer{
-      background:#0b1220;
-      border-radius:22px;
+      font-family:Arial;
       padding:20px;
-      margin-bottom:24px;
     }
-
-    .label{
-      color:#94a3b8;
-      margin-bottom:8px;
-    }
-
-    .value{
-      font-size:1.8rem;
-      font-weight:bold;
-      color:#22d3ee;
-    }
-
-    .btn{
+    .box{
+      max-width:520px;
       width:100%;
+      background:#0f172a;
+      padding:35px;
+      border-radius:24px;
+      text-align:center;
+    }
+    .btn{
       display:block;
+      width:100%;
       padding:15px;
-      border-radius:18px;
+      border-radius:16px;
       text-decoration:none;
       font-weight:bold;
-      transition:.25s;
-      margin-top:12px;
+      margin-top:14px;
+      border:none;
+      cursor:pointer;
     }
-
     .start{
-      background:linear-gradient(135deg,#22d3ee,#2563eb);
+      background:#2563eb;
       color:white;
     }
-
     .ticket{
       background:#111827;
       color:#e2e8f0;
-      border:1px solid rgba(255,255,255,.08);
     }
-
-    .hidden{
-      display:none;
-    }
-
-    .expired{
-      margin-top:22px;
+    .timer{
+      margin:20px 0;
       padding:18px;
-      border-radius:20px;
-      background:rgba(239,68,68,.08);
-      border:1px solid rgba(239,68,68,.22);
-      display:none;
+      border-radius:18px;
+      background:#020617;
     }
-
-    .expired h2{
-      color:#ef4444;
-      margin-bottom:10px;
+    .value{
+      font-size:1.7rem;
+      color:#22d3ee;
+      font-weight:bold;
+    }
+    .expired{
+      display:none;
+      margin-top:18px;
+      padding:18px;
+      border-radius:18px;
+      background:#331313;
+      border:1px solid #7f1d1d;
     }
   </style>
 </head>
 <body>
 
-  <div class="box">
+<div class="box">
+  <h1>CHANNEL+ PREMIUM</h1>
 
-    <h1>CHANNEL+ PREMIUM</h1>
+  <p>
+    Une seule démo gratuite de <strong>1h30</strong> est autorisée par compte Google.
+  </p>
 
-    <p>
-      Profitez d'un accès gratuit pendant <strong>24 heures</strong>.
-      Le compte à rebours commencera uniquement lorsque vous cliquerez sur le bouton.
-    </p>
-
-    <div class="timer">
-      <div class="label">Temps restant</div>
-      <div class="value" id="countdown">Pas encore commencé</div>
-    </div>
-
-    <!-- BOUTON DÉMO -->
-    <a href="site-multichaine.html"
-       id="startBtn"
-       class="btn start">
-      ▶ Commencer la démo
-    </a>
-
-    <!-- BOUTON TICKET -->
-    <a href="index.html"
-       class="btn ticket">
-      🔑 Acheter un ticket premium
-    </a>
-
-    <div class="expired" id="expiredBox">
-
-      <h2>⛔ Démo expirée</h2>
-
-      <p>
-        Votre période d'essai gratuite est terminée.
-      </p>
-
-      <a href="index.html"
-         class="btn ticket">
-        🔑 Obtenir un ticket
-      </a>
-    </div>
-
+  <div class="timer">
+    <div>Temps restant</div>
+    <div class="value" id="countdown">Connexion requise</div>
   </div>
 
-  <script>
+  <button id="startBtn" class="btn start">
+    🔐 Continuer avec Google
+  </button>
 
-    const DEMO_KEY = 'demoStartTime';
+  <a href="https://mhoxbwqk.mychariow.shop/prd_ufg4igd1" class="btn ticket">
+    🔑 Acheter un ticket premium
+  </a>
 
-    const DEMO_DURATION =
-      24 * 60 * 60 * 1000;
+  <div class="expired" id="expiredBox">
+    <h2>⛔ Démo expirée</h2>
+    <p>Cette démo a déjà été utilisée par ce compte Google.</p>
+    <a href="index.html" class="btn ticket">
+      🔑 Obtenir un ticket
+    </a>
+  </div>
+</div>
 
-    const countdown =
-      document.getElementById('countdown');
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import {
+  getAuth,
+  GoogleAuthProvider,
+  signInWithPopup
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-    const startBtn =
-      document.getElementById('startBtn');
+import {
+  getFirestore,
+  doc,
+  getDoc,
+  setDoc
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-    const expiredBox =
-      document.getElementById('expiredBox');
+// ====================
+// TON CONFIG FIREBASE
+// ====================
+const firebaseConfig = {
 
-    function format(ms){
+    apiKey: "AIzaSyAHnM8CnpVjFIOhXwPSFVn9907hK7yeyNk",
 
-      const total =
-        Math.floor(ms / 1000);
+    authDomain: "fir-c5cd0.firebaseapp.com",
 
-      const h =
-        Math.floor(total / 3600);
+    projectId: "fir-c5cd0",
 
-      const m =
-        Math.floor((total % 3600) / 60);
+    storageBucket: "fir-c5cd0.firebasestorage.app",
 
-      const s =
-        total % 60;
+    messagingSenderId: "254512974109",
 
-      return `${h}h ${m}m ${s}s`;
+    appId: "1:254512974109:web:5c785bcb9ca151457379f4"
+
+  };
+
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+const provider = new GoogleAuthProvider();
+
+const DEMO_DURATION = 90 * 60 * 1000; // 1h30
+
+const countdown = document.getElementById('countdown');
+const startBtn = document.getElementById('startBtn');
+const expiredBox = document.getElementById('expiredBox');
+
+function format(ms){
+  const total = Math.floor(ms / 1000);
+  const h = Math.floor(total / 3600);
+  const m = Math.floor((total % 3600) / 60);
+  const s = total % 60;
+  return `${h}h ${m}m ${s}s`;
+}
+
+let interval;
+
+function startCountdown(startTime){
+  clearInterval(interval);
+
+  function update(){
+    const remaining = startTime + DEMO_DURATION - Date.now();
+
+    if(remaining <= 0){
+      countdown.textContent = 'Expiré';
+      startBtn.style.display = 'none';
+      expiredBox.style.display = 'block';
+      return;
     }
 
-    function update(){
+    countdown.textContent = format(remaining);
+  }
 
-      const start =
-        Number(localStorage.getItem(DEMO_KEY));
+  update();
+  interval = setInterval(update, 1000);
+}
 
-      if(!start){
+startBtn.addEventListener('click', async () => {
+  try {
+    const result = await signInWithPopup(auth, provider);
+    const user = result.user;
 
-        countdown.textContent =
-          'Pas encore commencé';
+    const ref = doc(db, 'demoUsers', user.uid);
+    const snap = await getDoc(ref);
 
-        return;
-      }
+    // Première utilisation
+    if(!snap.exists()){
+      const startTime = Date.now();
 
-      const remaining =
-        start + DEMO_DURATION - Date.now();
+      await setDoc(ref, {
+        email: user.email,
+        startTime: startTime,
+        expiresAt: startTime + DEMO_DURATION
+      });
 
-      if(remaining <= 0){
+      startCountdown(startTime);
 
-        countdown.textContent = 'Expiré';
-
-        startBtn.style.display = 'none';
-
-        expiredBox.style.display = 'block';
-
-        return;
-      }
-
-      countdown.textContent =
-        format(remaining);
+      // Redirection vers ton vrai site
+      window.location.href = 'site-multichaine.html';
+      return;
     }
 
-    // Démarrage AU CLIC
-    startBtn.addEventListener('click', e => {
+    // Déjà utilisé
+    const data = snap.data();
 
-      e.preventDefault();
+    if(Date.now() > data.expiresAt){
+      countdown.textContent = 'Déjà utilisée';
+      startBtn.style.display = 'none';
+      expiredBox.style.display = 'block';
+      return;
+    }
 
-      if(!localStorage.getItem(DEMO_KEY)){
+    // Démo encore active
+    startCountdown(data.startTime);
+    window.location.href = 'site-multichaine.html';
 
-        localStorage.setItem(
-          DEMO_KEY,
-          Date.now()
-        );
-      }
-
-      // Aller vers ton vrai site
-      window.location.href =
-        'site-multichaine.html';
-    });
-
-    update();
-
-    setInterval(update, 1000);
-
-  </script>
+  } catch (e) {
+    alert('Erreur : ' + e.message);
+    console.error(e);
+  }
+});
+</script>
 
 </body>
 </html>
-```
-
