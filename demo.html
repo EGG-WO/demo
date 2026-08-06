@@ -1,10 +1,19 @@
+```html
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Channel+ Premium • Démo 1h30</title>
+
   <style>
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+      font-family:Arial, Helvetica, sans-serif;
+    }
+
     body{
       min-height:100vh;
       display:flex;
@@ -12,60 +21,86 @@
       align-items:center;
       background:#050816;
       color:white;
-      font-family:Arial;
       padding:20px;
     }
+
     .box{
-      max-width:520px;
       width:100%;
+      max-width:520px;
       background:#0f172a;
       padding:35px;
       border-radius:24px;
       text-align:center;
+      box-shadow:0 20px 50px rgba(0,0,0,.5);
     }
+
+    h1{
+      color:#22d3ee;
+      margin-bottom:10px;
+    }
+
+    p{
+      color:#cbd5e1;
+      line-height:1.6;
+      margin-bottom:20px;
+    }
+
+    .timer{
+      background:#020617;
+      padding:20px;
+      border-radius:18px;
+      margin-bottom:20px;
+    }
+
+    .value{
+      font-size:1.8rem;
+      color:#22d3ee;
+      font-weight:bold;
+      margin-top:8px;
+    }
+
     .btn{
       display:block;
       width:100%;
       padding:15px;
-      border-radius:16px;
-      text-decoration:none;
-      font-weight:bold;
-      margin-top:14px;
       border:none;
+      border-radius:16px;
+      font-weight:bold;
+      text-decoration:none;
       cursor:pointer;
+      margin-top:14px;
+      transition:.2s;
     }
+
     .start{
       background:#2563eb;
       color:white;
     }
+
     .ticket{
       background:#111827;
       color:#e2e8f0;
     }
-    .timer{
-      margin:20px 0;
-      padding:18px;
-      border-radius:18px;
-      background:#020617;
-    }
-    .value{
-      font-size:1.7rem;
-      color:#22d3ee;
-      font-weight:bold;
-    }
+
     .expired{
       display:none;
-      margin-top:18px;
+      margin-top:20px;
       padding:18px;
       border-radius:18px;
       background:#331313;
       border:1px solid #7f1d1d;
+    }
+
+    .expired h2{
+      color:#ef4444;
+      margin-bottom:10px;
     }
   </style>
 </head>
 <body>
 
 <div class="box">
+
   <h1>CHANNEL+ PREMIUM</h1>
 
   <p>
@@ -77,25 +112,36 @@
     <div class="value" id="countdown">Connexion requise</div>
   </div>
 
+  <!-- Bouton Google -->
   <button id="startBtn" class="btn start">
     🔐 Continuer avec Google
   </button>
 
+  <!-- Achat ticket -->
   <a href="https://mhoxbwqk.mychariow.shop/prd_ufg4igd1" class="btn ticket">
     🔑 Acheter un ticket premium
   </a>
 
+  <!-- Expiré -->
   <div class="expired" id="expiredBox">
     <h2>⛔ Démo expirée</h2>
-    <p>Cette démo a déjà été utilisée par ce compte Google.</p>
+
+    <p>
+      Cette démo a déjà été utilisée avec ce compte Google.
+    </p>
+
     <a href="https://mhoxbwqk.mychariow.shop/prd_ufg4igd1" class="btn ticket">
       🔑 Obtenir un ticket
     </a>
   </div>
+
 </div>
 
+<!-- FIREBASE -->
 <script type="module">
+
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
 import {
   getAuth,
   GoogleAuthProvider,
@@ -109,58 +155,87 @@ import {
   setDoc
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
+
 // ====================
-// TON CONFIG FIREBASE
+// CONFIG FIREBASE
 // ====================
+
 const firebaseConfig = {
 
-    apiKey: "AIzaSyAHnM8CnpVjFIOhXwPSFVn9907hK7yeyNk",
+  apiKey: "AIzaSyAHnM8CnpVjFIOhXwPSFVn9907hK7yeyNk",
 
-    authDomain: "fir-c5cd0.firebaseapp.com",
+  authDomain: "fir-c5cd0.firebaseapp.com",
 
-    projectId: "fir-c5cd0",
+  projectId: "fir-c5cd0",
 
-    storageBucket: "fir-c5cd0.firebasestorage.app",
+  storageBucket: "fir-c5cd0.firebasestorage.app",
 
-    messagingSenderId: "254512974109",
+  messagingSenderId: "254512974109",
 
-    appId: "1:254512974109:web:5c785bcb9ca151457379f4"
+  appId: "1:254512974109:web:5c785bcb9ca151457379f4"
 
-  };
+};
 
+
+// Initialisation
 
 const app = initializeApp(firebaseConfig);
+
 const auth = getAuth(app);
+
 const db = getFirestore(app);
 
 const provider = new GoogleAuthProvider();
 
-const DEMO_DURATION = 90 * 60 * 1000; // 1h30
 
-const countdown = document.getElementById('countdown');
-const startBtn = document.getElementById('startBtn');
-const expiredBox = document.getElementById('expiredBox');
+// 1h30
+
+const DEMO_DURATION = 90 * 60 * 1000;
+
+
+const countdown = document.getElementById("countdown");
+
+const startBtn = document.getElementById("startBtn");
+
+const expiredBox = document.getElementById("expiredBox");
+
+
+// Format heure
 
 function format(ms){
+
   const total = Math.floor(ms / 1000);
+
   const h = Math.floor(total / 3600);
+
   const m = Math.floor((total % 3600) / 60);
+
   const s = total % 60;
+
   return `${h}h ${m}m ${s}s`;
 }
+
+
+// Démarrer le compte à rebours
 
 let interval;
 
 function startCountdown(startTime){
+
   clearInterval(interval);
 
   function update(){
+
     const remaining = startTime + DEMO_DURATION - Date.now();
 
     if(remaining <= 0){
-      countdown.textContent = 'Expiré';
-      startBtn.style.display = 'none';
-      expiredBox.style.display = 'block';
+
+      countdown.textContent = "Expiré";
+
+      startBtn.style.display = "none";
+
+      expiredBox.style.display = "block";
+
       return;
     }
 
@@ -168,54 +243,95 @@ function startCountdown(startTime){
   }
 
   update();
+
   interval = setInterval(update, 1000);
 }
 
-startBtn.addEventListener('click', async () => {
+
+// Clic sur le bouton
+
+startBtn.addEventListener("click", async () => {
+
   try {
+
+    // Connexion Google
+
     const result = await signInWithPopup(auth, provider);
+
     const user = result.user;
 
-    const ref = doc(db, 'demoUsers', user.uid);
+
+    // Vérifier si l'utilisateur existe déjà
+
+    const ref = doc(db, "demoUsers", user.uid);
+
     const snap = await getDoc(ref);
 
+
     // Première utilisation
+
     if(!snap.exists()){
-      const startTime = Date.now();
+
+      const now = Date.now();
 
       await setDoc(ref, {
+
         email: user.email,
-        startTime: startTime,
-        expiresAt: startTime + DEMO_DURATION
+
+        startTime: now,
+
+        expiresAt: now + DEMO_DURATION
+
       });
 
-      startCountdown(startTime);
+      startCountdown(now);
 
       // Redirection vers ton vrai site
-      window.location.href = 'site-multichaine.html';
+
+      window.location.href = "site-multichaine.html";
+
       return;
     }
 
-    // Déjà utilisé
+
+    // Utilisateur déjà enregistré
+
     const data = snap.data();
 
+
+    // Démo expirée
+
     if(Date.now() > data.expiresAt){
-      countdown.textContent = 'Déjà utilisée';
-      startBtn.style.display = 'none';
-      expiredBox.style.display = 'block';
+
+      countdown.textContent = "Déjà utilisée";
+
+      startBtn.style.display = "none";
+
+      expiredBox.style.display = "block";
+
       return;
     }
 
-    // Démo encore active
-    startCountdown(data.startTime);
-    window.location.href = 'site-multichaine.html';
 
-  } catch (e) {
-    alert('Erreur : ' + e.message);
-    console.error(e);
+    // Démo encore active
+
+    startCountdown(data.startTime);
+
+    window.location.href = "site-multichaine.html";
+
   }
+
+  catch(error){
+
+    alert("Erreur : " + error.message);
+
+    console.error(error);
+  }
+
 });
+
 </script>
 
 </body>
 </html>
+```
